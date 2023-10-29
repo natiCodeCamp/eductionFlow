@@ -1,4 +1,4 @@
 mediaFiles/profile/*
 */__pycache__
 */migrations
-static_root/
+static_root/*
