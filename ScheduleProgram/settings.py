@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-g!100at8820#wxdwhj-6z)kblj!$8%+nz1qxp32qg+up--jtf='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["EductionFlow.pythonanywhere.com"]
+ALLOWED_HOSTS = ["*"]
 AUTH_USER_MODEL  = 'schedules.MyUser'
 
 # Application definition
@@ -79,10 +79,10 @@ WSGI_APPLICATION = 'ScheduleProgram.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'EductionFlow$Django',
-        'USER': 'EductionFlow',
-        'PASSWORD': 'Mydatabase',
-        'HOST': 'EductionFlow.mysql.pythonanywhere-services.com',
+        'NAME': 'django',
+        'USER': 'root',
+        'PASSWORD': '1234567890',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }
