@@ -22,24 +22,6 @@ def getUser(request):
         return Response(serialzer.data)
     else:
         return Response({"error":"something went wrong"},status=406)
-@api_view(['post'])
-def GetUserGoogle(request):
-    acsses_token=request.data.get("token")
-    athunticated_user = requests.get(f"https://www.googleapis.com/oauth2/v3/userinfo?access_token={acsses_token}")
-    user_data =athunticated_user.json()
-    fiterer = MyUser.objects.filter(email=user_data.get('email'))
-    if(fiterer):
-        if(fiterer[0].is_teacher):
-            serialzer = UserSerialzerTeacher(fiterer[0])
-        else:
-            serialzer = UserSerialzerStudent(fiterer[0])
-        return Response({
-            "SignUp":False,
-            'data':serialzer.data
-        })
-    else:
-        return Response({"SignUp":True,'data':user_data})
-
 @api_view(["POST"])
 def SignUp(request):
     firstname = request.data.get('firstname')
