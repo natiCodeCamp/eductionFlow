@@ -1,11 +1,11 @@
-from collections.abc import Iterable
 from django.db import models
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser,UserManager
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.db import models
 from datetime import date
+from django.db import transaction
 import os
 
 def update_filename(instance, filename):
@@ -37,7 +37,7 @@ class Grade(models.Model):
         return super().save()
     def __str__(self):
         return f"{self.grade}"
-    
+
 class Teacher(models.Model):
     user = models.OneToOneField(MyUser,on_delete=models.CASCADE)
     profile =models.ImageField(upload_to=update_filename,default='default/user.png',blank=True)
@@ -75,7 +75,7 @@ class Student(models.Model):
     profile = models.ImageField(upload_to=update_filename,default='default/user.png',blank=True)
     grade =models.ForeignKey(Grade,on_delete=models.SET_DEFAULT,default=1,blank=True)
     bookmarks = models.ManyToManyField(Schedule,blank=True)
-    
+
     def __str__(self):
         return self.user.username
     def save(self,*args,**kwargs):
@@ -84,18 +84,20 @@ class Student(models.Model):
             raise ValidationError
         else:
             super(Student, self).save(*args, **kwargs)
-    
+
 
 @receiver(post_save, sender=MyUser)
 def create_profile(sender, instance, created, **kwargs):
     if created:
         if instance.is_teacher:
             try:
-                Teacher.objects.create(user=instance)
+                with transaction.atomic():
+                    Teacher.objects.create(user=instance)
             except Exception:
                 pass
         else:
             try:
-                Student.objects.create(user=instance)
+                with transaction.atomic():
+                    Student.objects.create(user=instance)
             except Exception:
                 pass

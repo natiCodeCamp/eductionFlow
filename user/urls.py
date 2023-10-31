@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import getUser,GetUserGoogle,SignUp,getProfile,UpdateProfile
+from .views import getUser,SignUp,getProfile,UpdateProfile
 from rest_framework.authtoken.views import ObtainAuthToken
 urlpatterns = [
     path('get_user/',getUser),
