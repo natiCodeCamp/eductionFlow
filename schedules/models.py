@@ -1,6 +1,8 @@
 from collections.abc import Iterable
 from django.db import models
+from django.db.models.signals import post_save, pre_delete
 from django.contrib.auth.models import AbstractUser,UserManager
+from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.db import models
 from datetime import date
@@ -13,7 +15,7 @@ def update_filename(instance, filename):
     return os.path.join(path, format)
 # Create your models here.
 class MyUser(AbstractUser):
-    email = models.EmailField(blank=True,null=True)
+    email = models.EmailField(blank=True)
     is_teacher = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -38,8 +40,8 @@ class Grade(models.Model):
     
 class Teacher(models.Model):
     user = models.OneToOneField(MyUser,on_delete=models.CASCADE)
-    profile =models.ImageField(upload_to=update_filename,null=True)
-    subject=models.ForeignKey(Subject,models.SET_DEFAULT,to_field="subject",default="default")
+    profile =models.ImageField(upload_to=update_filename,default='default/user.png',blank=True)
+    subject=models.ForeignKey(Subject,models.SET_DEFAULT,to_field="subject",default="Maths",blank=True)
 
     def __str__(self):
         return self.user.username
@@ -70,8 +72,8 @@ class Schedule(models.Model):
         return f"{self.teacher}"
 class Student(models.Model):
     user = models.OneToOneField(MyUser,on_delete=models.CASCADE)
-    profile = models.ImageField(upload_to=update_filename,default='default/user.png',null=True,blank=True)
-    grade =models.ForeignKey(Grade,on_delete=models.SET_DEFAULT,default=1)
+    profile = models.ImageField(upload_to=update_filename,default='default/user.png',blank=True)
+    grade =models.ForeignKey(Grade,on_delete=models.SET_DEFAULT,default=1,blank=True)
     bookmarks = models.ManyToManyField(Schedule,blank=True)
     
     def __str__(self):
@@ -83,3 +85,17 @@ class Student(models.Model):
         else:
             super(Student, self).save(*args, **kwargs)
     
+
+@receiver(post_save, sender=MyUser)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        if instance.is_teacher:
+            try:
+                Teacher.objects.create(user=instance)
+            except Exception:
+                pass
+        else:
+            try:
+                Student.objects.create(user=instance)
+            except Exception:
+                pass
