@@ -86,7 +86,6 @@ class Student(models.Model):
             super(Student, self).save(*args, **kwargs)
 
 
-@receiver(post_save, sender=MyUser)
 def create_profile(sender, instance, created, **kwargs):
     if created:
         if instance.is_teacher:
@@ -101,3 +100,6 @@ def create_profile(sender, instance, created, **kwargs):
                     Student.objects.create(user=instance)
             except Exception:
                 pass
+
+
+post_save.connect(create_profile, sender=MyUser, dispatch_uid="myUniqueSignal")

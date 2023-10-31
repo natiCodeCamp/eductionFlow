@@ -35,23 +35,12 @@ def SignUp(request):
         grade_obj = Grade.objects.get(id=int(grade))
         if(email == ""):
             user = MyUser.objects.create_user(username=username,last_name=lastname,first_name=firstname,password=password)
-            profile = Student.objects.create(user=user)
         else:
             user = MyUser.objects.create_user(username=username,last_name=lastname,first_name=firstname,email=email,password=password)
-            profile = Student.objects.create(user=user)
-        if(pic):
-            data =urllib2.urlopen(pic)
-            file = File(data)
-            profile.profile.save(user.username,file)
-            file.close()
         if(grade_obj):
-            print(grade,'testing')
-            profile.grade = grade_obj
-            profile.save()
-        if(user.is_teacher):
-            obj = UserSerialzerTeacher(user)
-        else:
-            obj =UserSerialzerStudent(user)
+            user.student.grade = grade_obj
+            user.student.save()
+        obj =UserSerialzerStudent(user)
         return Response(obj.data)
     except Exception as e:
         print(e)
