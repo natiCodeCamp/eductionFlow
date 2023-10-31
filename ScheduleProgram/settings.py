@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-g!100at8820#wxdwhj-6z)kblj!$8%+nz1qxp32qg+up--jtf='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["EductionFlow.pythonanywhere.com"]
 AUTH_USER_MODEL  = 'schedules.MyUser'
