@@ -13,7 +13,7 @@ def update_filename(instance, filename):
     return os.path.join(path, format)
 # Create your models here.
 class MyUser(AbstractUser):
-    email = models.EmailField(unique=True,null=True,blank=True)
+    email = models.EmailField(blank=True,null=True)
     is_teacher = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
